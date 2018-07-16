@@ -1,6 +1,6 @@
 import os
 import json_format
-import logic
+import menu
 from flask import Flask, request, json, jsonify, make_response, render_template
 from slackclient import SlackClient
 from config import Config
@@ -34,31 +34,22 @@ def index():
 
 # Endpoint for the slash command
 @app.route("/job", methods=["POST"])
-def glow():
+def job_post():
     payload = request.form.to_dict()
     # remove this to debug the payload
     # print(json_format.pretty_json(payload))
-    demo = {
-        "callback_id": "ryde-46e2b0",
-        "title": "Request a Ride",
-        "submit_label": "Request",
-        "elements": [
-            {
-                "type": "text",
-                "label": "Pickup Location",
-                "name": "loc_origin"
-            },
-            {
-                "type": "text",
-                "label": "Dropoff Location",
-                "name": "loc_destination"
-            }
-        ]
-    }
-    print(payload['trigger_id'])
 
-    sc.api_call('dialog.open', dialog=demo, trigger_id=payload['trigger_id'])
+    # uncomment the below for debugging
+    # print(payload['trigger_id'])
+    sc.api_call('dialog.open', dialog=menu.job_menu,
+                trigger_id=payload['trigger_id'])
     return make_response("", 200)
+
+
+@app.route("/action", methods=["POST"])
+def action_route():
+    payload = request.form.to_dict()
+    print(payload)
 
 
 if __name__ == "__main__":
