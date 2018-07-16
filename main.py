@@ -46,10 +46,14 @@ def job_post():
     return make_response("", 200)
 
 
-@app.route("/action", methods=["POST"])
+@app.route("/actions", methods=["POST"])
 def action_route():
-    payload = request.form.to_dict()
-    print(payload)
+    payload = json.loads(request.form.get("payload"))
+    print(json_format.pretty_json(payload))
+    if payload['type'] == 'dialog_cancellation':
+        return ""
+    else:
+        return make_response("posted", 200)
 
 
 if __name__ == "__main__":
