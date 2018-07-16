@@ -1,7 +1,7 @@
 job_menu = {
     "callback_id": "job-post",
     "title": "Post a job",
-    "submit_label": "Request",
+    "submit_label": "Post a Job",
     "notify_on_cancel": "true",
     "elements": [
         {
