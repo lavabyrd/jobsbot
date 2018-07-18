@@ -1,6 +1,7 @@
 import os
 import json_format
 import menu
+import responses
 from flask import Flask, request, json, jsonify, make_response, render_template
 from slackclient import SlackClient
 from config import Config
@@ -10,8 +11,6 @@ app = Flask(__name__)
 
 app.config.from_object(Config)
 
-# Addition of the tokens required. User_token may not be
-# needed here unless we want to kick a user from the channel
 b_token = app.config['BOT_TOKEN']
 u_token = app.config['USER_TOKEN']
 veri = app.config['VERIFICATION_TOKEN']
@@ -19,14 +18,10 @@ oauth_scope = app.config['OAUTH_SCOPE']
 client_id = app.config['CLIENT_ID']
 client_secret = app.config['CLIENT_SECRET']
 
-
 # Global reference for the Slack Client tokens
 sc = SlackClient(b_token)
-sc_user = SlackClient(u_token)
 
 
-# Points to the index page and just shows an easy way to
-# determine the site is up
 @app.route("/")
 def index():
     return render_template('index.html')
@@ -49,11 +44,36 @@ def job_post():
 @app.route("/actions", methods=["POST"])
 def action_route():
     payload = json.loads(request.form.get("payload"))
-    print(json_format.pretty_json(payload))
-    if payload['type'] == 'dialog_cancellation':
+    # print(f"actions payload is {json_format.pretty_json(payload)}")
+    if payload['callback_id'] == "job_post":
+        if payload['type'] != 'dialog_cancellation':
+            sc.api_call('chat.postMessage',
+                        channel=payload['user']['id'],
+                        text=responses.make_response(
+                            payload["submission"]["contract_type"],
+                            payload["submission"]["city"],
+                            payload["submission"]["job_title"],
+                            payload["submission"]["salary"],
+                            payload["submission"]["info"],
+                            payload["user"]["id"]
+                        ),
+                        attachments=responses.attachm,
+                        as_user="true")
+            return ""
+        else:
+            return make_response("", 200)
+    elif payload['callback_id'] == 'confirm_post':
+        # print(f"actions payload is {json_format.pretty_json(payload)}")
+        sc.api_call("chat.postMessage",
+                    text=payload["original_message"]["text"],
+                    as_user="true",
+                    channel="CBKSQQBS9")
+        sc.api_call('chat.update',
+                    ts=payload["message_ts"],
+                    channel=payload["channel"]["id"],
+                    as_user="true",
+                    attachments=responses.attachm_update)
         return ""
-    else:
-        return make_response("posted", 200)
 
 
 if __name__ == "__main__":
