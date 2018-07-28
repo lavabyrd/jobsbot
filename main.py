@@ -64,16 +64,30 @@ def action_route():
             return make_response("", 200)
     elif payload['callback_id'] == 'confirm_post':
         # print(f"actions payload is {json_format.pretty_json(payload)}")
-        sc.api_call("chat.postMessage",
-                    text=payload["original_message"]["text"],
-                    as_user="true",
-                    channel="CBUAKB622")
-        sc.api_call('chat.update',
-                    ts=payload["message_ts"],
-                    channel=payload["channel"]["id"],
-                    as_user="true",
-                    attachments=responses.attachm_update)
-        return ""
+        if payload['team']['domain'] == "mgpreston":
+            post_channel = "CBUAKB622"
+        elif payload['team']['domain'] == "mpreston-owner":
+            post_channel = "CBYPV45FF"
+        elif payload['team']['domain'] == "irishtechcommunity":
+            post_channel = "C035JE6UR"
+        else:
+            print(f"team {payload['team']['domain']} is not known")
+        try:
+            sc.api_call("chat.postMessage",
+                        text=payload["original_message"]["text"],
+                        as_user="true",
+                        # channel="CBUAKB622")
+                        channel=post_channel)
+            sc.api_call('chat.update',
+                        ts=payload["message_ts"],
+                        channel=payload["channel"]["id"],
+                        as_user="true",
+                        attachments=responses.attachm_update)
+            return ""
+        except UnboundLocalError:
+            print(f"error was encountered")
+            print(f"{payload['team']['domain']} not recognised")
+            return "error, team not recognised, please contact markgpreston@gmail.com"
 
 
 if __name__ == "__main__":

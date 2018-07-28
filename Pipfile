@@ -28,9 +28,11 @@ MarkupSafe = "==1.0"
 Werkzeug = "==0.14.1"
 
 [dev-packages]
+pylint = "*"
+"pep8" = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
 
 [[source]]
 url = "https://pypi.org/simple"
