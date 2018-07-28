@@ -83,8 +83,8 @@ def action_route():
             sc.api_call("chat.postMessage",
                         text=payload["original_message"]["text"],
                         as_user="true",
-                        # channel="CBUAKB622")
-                        channel=post_channel)
+                        channel="CBYPV45FF")
+            # channel=post_channel)
             sc.api_call('chat.update',
                         ts=payload["message_ts"],
                         channel=payload["channel"]["id"],
