@@ -4,7 +4,9 @@ import menu
 import responses
 from flask import Flask, request, json, jsonify, make_response, render_template
 from slackclient import SlackClient
+import os
 from config import Config
+import oauth_logic
 
 # Creation of the Flask app
 app = Flask(__name__)
@@ -12,6 +14,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 b_token = app.config['BOT_TOKEN']
+# b_token_mpreston_owner = app.config['MPRESTON_BOT_TOKEN']
 u_token = app.config['USER_TOKEN']
 veri = app.config['VERIFICATION_TOKEN']
 oauth_scope = app.config['OAUTH_SCOPE']
@@ -19,7 +22,7 @@ client_id = app.config['CLIENT_ID']
 client_secret = app.config['CLIENT_SECRET']
 
 # Global reference for the Slack Client tokens
-sc = SlackClient(b_token)
+# sc = SlackClient(b_token)
 
 
 @app.route("/")
@@ -36,6 +39,8 @@ def job_post():
 
     # uncomment the below for debugging
     # print(payload['trigger_id'])
+    sc = SlackClient(os.environ.get(f"{payload['team_domain']}_token"))
+
     sc.api_call('dialog.open', dialog=menu.job_menu,
                 trigger_id=payload['trigger_id'])
     return make_response("", 200)
@@ -47,6 +52,8 @@ def action_route():
     # print(f"actions payload is {json_format.pretty_json(payload)}")
     if payload['callback_id'] == "job_post":
         if payload['type'] != 'dialog_cancellation':
+            sc = SlackClient(os.environ.get(
+                f"{payload['team']['domain']}_token"))
             sc.api_call('chat.postMessage',
                         channel=payload['user']['id'],
                         text=responses.make_response(
@@ -88,6 +95,25 @@ def action_route():
             print(f"error was encountered")
             print(f"{payload['team']['domain']} not recognised")
             return "error, team not recognised, please contact markgpreston@gmail.com"
+
+
+# Oauth install endpoint
+@app.route("/oauth_install", methods=["GET"])
+def pre_install():
+
+    # This shall be split out to a template shortly
+    return render_template("install.html",
+                           oauth_scope=oauth_scope,
+                           client_id=client_id
+                           )
+
+
+# Oauth finished endpoint
+@app.route("/oauth_completed", methods=["GET", "POST"])
+def post_install():
+    sc = SlackClient(b_token)
+    auth_response = oauth_logic.oauth_access(sc)
+    return f"Authed and installed to your team - {auth_response['team_name']}"
 
 
 if __name__ == "__main__":
