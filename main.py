@@ -35,11 +35,15 @@ def index():
 def job_post():
     payload = request.form.to_dict()
     # remove this to debug the payload
-    # print(json_format.pretty_json(payload))
+    print(json_format.pretty_json(payload))
 
     # uncomment the below for debugging
     # print(payload['trigger_id'])
-    sc = SlackClient(os.environ.get(f"{payload['team_domain']}_token"))
+    # sc = SlackClient(os.environ.get(f"{payload['team_domain']}_token"))
+    if payload['team_domain'] == 'mgpreston':
+        sc = SlackClient(b_token)
+    elif payload['team_domain'] == 'mpreston-owner':
+        sc = SlackClient(os.environ.get("MPRESTON_OWNER_token"))
 
     sc.api_call('dialog.open', dialog=menu.job_menu,
                 trigger_id=payload['trigger_id'])
