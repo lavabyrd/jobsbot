@@ -16,7 +16,7 @@ def oauth_access(sc):
         code=auth_code
     )
     # os.environ["SO_USER_TOKEN"] = auth_response['access_token']
-    os.environ[f"{auth_response['team_name']}_token"] = auth_response['bot']['bot_access_token']
+    # os.environ[f"{auth_response['team_name']}_token"] = auth_response['bot']['bot_access_token']
     print(f"{auth_response['team_name']}_token")
     print(f"the team_id is {auth_response['team_id']}")
     print(auth_response)
