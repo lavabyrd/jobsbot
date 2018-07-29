@@ -18,7 +18,7 @@ veri = app.config['VERIFICATION_TOKEN']
 oauth_scope = app.config['OAUTH_SCOPE']
 client_id = app.config['CLIENT_ID']
 client_secret = app.config['CLIENT_SECRET']
-target_channel = app.config['TARGET_CHANNEL']
+target_channel = app.config['TARGET_JOB_CHANNEL']
 
 # Global reference for the Slack Client tokens
 sc = SlackClient(b_token)
