@@ -34,13 +34,13 @@ def index():
 def job_post():
     payload = request.form.to_dict()
     # remove this to debug the payload
-    # print(json_format.pretty_json(payload))
+    print(json_format.pretty_json(payload))
 
     # uncomment the below for debugging
-    # print(payload['trigger_id'])
+    print(payload['trigger_id'])
 
-    sc.api_call('dialog.open', dialog=menu.job_menu,
-                trigger_id=payload['trigger_id'])
+    print(sc.api_call('dialog.open', dialog=menu.job_menu,
+                      trigger_id=payload['trigger_id']))
     return make_response("", 200)
 
 
