@@ -50,8 +50,8 @@ def action_route():
     # print(f"actions payload is {json_format.pretty_json(payload)}")
     if payload['callback_id'] == "job_post":
         if payload['type'] != 'dialog_cancellation':
-            sc = SlackClient(os.environ.get(
-                f"{payload['team']['domain']}_token"))
+            # sc = SlackClient(os.environ.get(
+            #     f"{payload['team']['domain']}_token"))
             sc.api_call('chat.postMessage',
                         channel=payload['user']['id'],
                         text=responses.make_response(
@@ -86,10 +86,11 @@ def action_route():
 def pre_install():
 
     # This shall be split out to a template shortly
-    return render_template("install.html",
-                           oauth_scope=oauth_scope,
-                           client_id=client_id
-                           )
+    # return render_template("install.html",
+    #                        oauth_scope=oauth_scope,
+    #                        client_id=client_id
+    #                        )
+    return "Not available"
 
 
 # Oauth finished endpoint

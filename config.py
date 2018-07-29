@@ -8,7 +8,7 @@ load_dotenv(os.path.join(basedir, '.env'))
 class Config(object):
     VERIFICATION_TOKEN = os.environ.get(
         "JB_VERIFICATION_TOKEN")
-    BOT_TOKEN = os.environ.get("BOT_TOKEN")
+    BOT_TOKEN = os.environ.get("JB_BOT_TOKEN_ITC")
     # MPRESTON_BOT_TOKEN = os.environ.get("JOB_BOT_TOKEN_MPRESTON_OWNER")
     USER_TOKEN = os.environ.get("JOB_USER_TOKEN")
     OAUTH_TOKEN = os.environ.get("OAUTH_TOKEN")
