@@ -1,1 +1,1 @@
-web: python main.py -p $PORT
+web: NEW_RELIC_CONFIG_FILE=newrelic.ini NEW_RELIC_LICENSE_KEY=$NR_LICENCE_KEY newrelic-admin run-program python main.py -p $PORT
