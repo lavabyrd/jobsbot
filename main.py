@@ -14,15 +14,14 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 b_token = app.config['BOT_TOKEN']
-# b_token_mpreston_owner = app.config['MPRESTON_BOT_TOKEN']
-u_token = app.config['USER_TOKEN']
 veri = app.config['VERIFICATION_TOKEN']
 oauth_scope = app.config['OAUTH_SCOPE']
 client_id = app.config['CLIENT_ID']
 client_secret = app.config['CLIENT_SECRET']
+target_channel = app.config['TARGET_CHANNEL']
 
 # Global reference for the Slack Client tokens
-# sc = SlackClient(b_token)
+sc = SlackClient(b_token)
 
 
 @app.route("/")
@@ -35,15 +34,10 @@ def index():
 def job_post():
     payload = request.form.to_dict()
     # remove this to debug the payload
-    print(json_format.pretty_json(payload))
+    # print(json_format.pretty_json(payload))
 
     # uncomment the below for debugging
     # print(payload['trigger_id'])
-    # sc = SlackClient(os.environ.get(f"{payload['team_domain']}_token"))
-    if payload['team_domain'] == 'mgpreston':
-        sc = SlackClient(b_token)
-    elif payload['team_domain'] == 'mpreston-owner':
-        sc = SlackClient(os.environ.get("MPRESTON_OWNER_token"))
 
     sc.api_call('dialog.open', dialog=menu.job_menu,
                 trigger_id=payload['trigger_id'])
@@ -75,30 +69,16 @@ def action_route():
             return make_response("", 200)
     elif payload['callback_id'] == 'confirm_post':
         # print(f"actions payload is {json_format.pretty_json(payload)}")
-        if payload['team']['domain'] == "mgpreston":
-            post_channel = "CBUAKB622"
-        elif payload['team']['domain'] == "mpreston-owner":
-            post_channel = "CBYPV45FF"
-        elif payload['team']['domain'] == "irishtechcommunity":
-            post_channel = "C035JE6UR"
-        else:
-            print(f"team {payload['team']['domain']} is not known")
-        try:
-            sc.api_call("chat.postMessage",
-                        text=payload["original_message"]["text"],
-                        as_user="true",
-                        channel=post_channel)
-            # channel=post_channel)
-            sc.api_call('chat.update',
-                        ts=payload["message_ts"],
-                        channel=payload["channel"]["id"],
-                        as_user="true",
-                        attachments=responses.attachm_update)
-            return ""
-        except UnboundLocalError:
-            print(f"error was encountered")
-            print(f"{payload['team']['domain']} not recognised")
-            return "error, team not recognised, please contact markgpreston@gmail.com"
+        sc.api_call("chat.postMessage",
+                    text=payload["original_message"]["text"],
+                    as_user="true",
+                    channel=target_channel)
+        sc.api_call('chat.update',
+                    ts=payload["message_ts"],
+                    channel=payload["channel"]["id"],
+                    as_user="true",
+                    attachments=responses.attachm_update)
+        return ""
 
 
 # Oauth install endpoint
@@ -115,7 +95,6 @@ def pre_install():
 # Oauth finished endpoint
 @app.route("/oauth_completed", methods=["GET", "POST"])
 def post_install():
-    sc = SlackClient(b_token)
     auth_response = oauth_logic.oauth_access(sc)
     return f"Authed and installed to your team - {auth_response['team_name']}"
 
