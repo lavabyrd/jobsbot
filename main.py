@@ -34,13 +34,13 @@ def index():
 def job_post():
     payload = request.form.to_dict()
     # remove this to debug the payload
-    print(json_format.pretty_json(payload))
+    # print(json_format.pretty_json(payload))
 
     # uncomment the below for debugging
-    print(payload['trigger_id'])
+    # print(payload['trigger_id'])
 
-    print(sc.api_call('dialog.open', dialog=menu.job_menu,
-                      trigger_id=payload['trigger_id']))
+    sc.api_call('dialog.open', dialog=menu.job_menu,
+                trigger_id=payload['trigger_id'])
     return make_response("", 200)
 
 
@@ -68,17 +68,23 @@ def action_route():
         else:
             return make_response("", 200)
     elif payload['callback_id'] == 'confirm_post':
-        # print(f"actions payload is {json_format.pretty_json(payload)}")
-        sc.api_call("chat.postMessage",
-                    text=payload["original_message"]["text"],
-                    as_user="true",
-                    channel=target_channel)
-        sc.api_call('chat.update',
-                    ts=payload["message_ts"],
-                    channel=payload["channel"]["id"],
-                    as_user="true",
-                    attachments=responses.attachm_update)
-        return ""
+        if payload['actions'][0]['name'] == 'cancelled_job':
+            return payload["original_message"]["text"]
+        elif payload['actions'][0]['name'] == 'PostJob':
+            # print(f"actions payload is {json_format.pretty_json(payload)}")
+            sc.api_call("chat.postMessage",
+                        text=payload["original_message"]["text"],
+                        as_user="true",
+                        channel=target_channel)
+            sc.api_call('chat.update',
+                        ts=payload["message_ts"],
+                        channel=payload["channel"]["id"],
+                        as_user="true",
+                        text=payload["original_message"]["text"],
+                        attachments=responses.attachm_update)
+            return ""
+        else:
+            return ""
 
 
 # Oauth install endpoint
