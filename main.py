@@ -52,6 +52,15 @@ def action_route():
         if payload['type'] != 'dialog_cancellation':
             # sc = SlackClient(os.environ.get(
             #     f"{payload['team']['domain']}_token"))
+            sc.api_call("chat.postMessage",
+                        text="You can click *Post It!* to let jobbot post the job " +
+                        "listing exactly as you see it. \n " +
+                        "*Note:* The job listing posted by jobbot cannot " +
+                        "be edited or removed. If you’d prefer the flexibility " +
+                        "to tweak it later, then simply copy the text and paste it into the <#C035JE6UR|Jobs> channel \n",
+                        as_user="true",
+                        channel=payload['user']['id'])
+
             sc.api_call('chat.postMessage',
                         channel=payload['user']['id'],
                         text=responses.make_response(
