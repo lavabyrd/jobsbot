@@ -33,4 +33,5 @@ attachm_update = [
 
 
 def make_response(jtype, location, job_title, salary, message, contact):
+    salary = salary or 'Salary not supplied' 
     return f"*[{jtype}] [{location}] [{job_title}] [{salary}]* {message}. Contact <@{contact}> for information!"
