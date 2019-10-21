@@ -1,5 +1,5 @@
--i https://pypi.org/simple
---extra-index-url https://pypi.org/simple
+-i https://pypi.org/simple/
+--extra-index-url https://pypi.org/simple/
 amqp==2.3.2
 billiard==3.5.0.3
 celery==4.2.0
@@ -22,4 +22,4 @@ slackclient==1.2.1
 urllib3==1.23
 vine==1.1.4
 websocket-client==0.48.0
-werkzeug==0.14.1
+werkzeug==0.15.3
